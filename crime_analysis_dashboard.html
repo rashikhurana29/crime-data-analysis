@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Crime Data Analysis – Women Safety Metrics | Rashi Khurana</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:#F0F2F5;padding:24px;color:#1a1a1a;}
+.db-wrap{background:#F7F8FA;padding:20px;border-radius:14px;border:1px solid #e0e0e0;max-width:1100px;margin:0 auto;}
+.db-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.db-title{font-size:16px;font-weight:600;color:#1a1a1a;}
+.db-sub{font-size:11px;color:#666;margin-top:3px;}
+.badge{font-size:10px;padding:4px 12px;border-radius:20px;background:#FCEBEB;color:#A32D2D;border:1px solid #F09595;font-weight:500;}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px;}
+.kpi{background:#fff;border-radius:10px;padding:14px;border:1px solid #e8e8e8;}
+.kpi-label{font-size:10px;color:#888;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.kpi-val{font-size:20px;font-weight:600;color:#1a1a1a;}
+.kpi-delta{font-size:10px;margin-top:4px;}
+.up{color:#E24B4A;}
+.down{color:#1D9E75;}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.charts-row2{display:grid;grid-template-columns:2fr 1fr;gap:12px;}
+.chart-card{background:#fff;border-radius:10px;padding:16px;border:1px solid #e8e8e8;}
+.chart-title{font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:10px;}
+.legend{display:flex;gap:12px;margin-bottom:8px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#666;}
+.leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.risk-table{width:100%;border-collapse:collapse;font-size:11px;}
+.risk-table th{text-align:left;font-size:10px;font-weight:600;color:#888;padding:5px 8px;border-bottom:1px solid #eee;text-transform:uppercase;}
+.risk-table td{padding:6px 8px;color:#1a1a1a;border-bottom:1px solid #f0f0f0;}
+.risk-high{background:#FCEBEB;color:#A32D2D;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;}
+.risk-med{background:#FAEEDA;color:#633806;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;}
+.risk-low{background:#EAF3DE;color:#27500A;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;}
+.footer{text-align:center;font-size:10px;color:#aaa;margin-top:14px;}
+@media(max-width:700px){.kpi-row{grid-template-columns:repeat(2,1fr);}.charts-row,.charts-row2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="db-wrap">
+  <div class="db-header">
+    <div>
+      <div class="db-title">Crime Data Analysis – Women Safety Metrics</div>
+      <div class="db-sub">2018–2023 &nbsp;|&nbsp; Pan India &nbsp;|&nbsp; Python · Pandas · Matplotlib</div>
+    </div>
+    <span class="badge">Safety Analysis</span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Total Incidents</div>
+      <div class="kpi-val">4,28,278</div>
+      <div class="kpi-delta up">+8.3% YoY</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">High-Risk Zones</div>
+      <div class="kpi-val">12</div>
+      <div class="kpi-delta up">+2 new zones</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Top Crime Type</div>
+      <div class="kpi-val" style="font-size:13px;">Harassment</div>
+      <div class="kpi-delta up">34.2% of cases</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Night Incidents</div>
+      <div class="kpi-val">61%</div>
+      <div class="kpi-delta up">10pm – 4am</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Conviction Rate</div>
+      <div class="kpi-val">27.4%</div>
+      <div class="kpi-delta down">+4.1pts improvement</div>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">Yearly incident trend by crime type</div>
+      <div class="legend">
+        <span class="leg-item"><span class="leg-dot" style="background:#E24B4A;"></span>Harassment</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#7F77DD;"></span>Assault</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#EF9F27;"></span>Stalking</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#378ADD;"></span>Other</span>
+      </div>
+      <div style="position:relative;width:100%;height:200px;">
+        <canvas id="trendChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Crime distribution by type</div>
+      <div style="position:relative;width:100%;height:200px;">
+        <canvas id="pieChart"></canvas>
+      </div>
+      <div class="legend" style="margin-top:8px;">
+        <span class="leg-item"><span class="leg-dot" style="background:#E24B4A;"></span>Harassment 34%</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#7F77DD;"></span>Assault 26%</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#EF9F27;"></span>Stalking 18%</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#378ADD;"></span>Domestic 14%</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#5DCAA5;"></span>Other 8%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row2">
+    <div class="chart-card">
+      <div class="chart-title">Incidents by hour of day (time-pattern analysis)</div>
+      <div style="position:relative;width:100%;height:180px;">
+        <canvas id="hourChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">High-risk zones ranking</div>
+      <table class="risk-table">
+        <thead>
+          <tr><th>Zone / City</th><th>Incidents</th><th>Risk</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Delhi NCR</td><td>82,340</td><td><span class="risk-high">High</span></td></tr>
+          <tr><td>Mumbai Suburban</td><td>61,200</td><td><span class="risk-high">High</span></td></tr>
+          <tr><td>Kolkata Central</td><td>48,900</td><td><span class="risk-high">High</span></td></tr>
+          <tr><td>Hyderabad</td><td>37,450</td><td><span class="risk-med">Medium</span></td></tr>
+          <tr><td>Lucknow</td><td>29,100</td><td><span class="risk-med">Medium</span></td></tr>
+          <tr><td>Pune</td><td>18,200</td><td><span class="risk-low">Low</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer">Built by Rashi Khurana &nbsp;·&nbsp; Python · Pandas · Matplotlib &nbsp;·&nbsp; Data Analyst Portfolio</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const years=['2018','2019','2020','2021','2022','2023'];
+new Chart(document.getElementById('trendChart'),{
+  type:'line',
+  data:{labels:years,datasets:[
+    {label:'Harassment',data:[58000,63000,55000,67000,72000,78000],borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.06)',fill:true,tension:0.4,pointRadius:3},
+    {label:'Assault',data:[42000,45000,39000,48000,52000,56000],borderColor:'#7F77DD',backgroundColor:'transparent',tension:0.4,pointRadius:3},
+    {label:'Stalking',data:[28000,31000,26000,34000,37000,41000],borderColor:'#EF9F27',backgroundColor:'transparent',borderDash:[4,3],tension:0.4,pointRadius:3},
+    {label:'Other',data:[18000,19000,16000,21000,23000,25000],borderColor:'#378ADD',backgroundColor:'transparent',borderDash:[2,2],tension:0.4,pointRadius:3}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{font:{size:10}},grid:{color:'rgba(0,0,0,0.04)'}},
+    y:{ticks:{font:{size:10},callback:v=>(v/1000).toFixed(0)+'K'},grid:{color:'rgba(0,0,0,0.04)'}}}}
+});
+
+new Chart(document.getElementById('pieChart'),{
+  type:'doughnut',
+  data:{labels:['Harassment','Assault','Stalking','Domestic','Other'],
+    datasets:[{data:[34,26,18,14,8],backgroundColor:['#E24B4A','#7F77DD','#EF9F27','#378ADD','#5DCAA5'],borderWidth:2,borderColor:'#fff'}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}
+});
+
+const hours=Array.from({length:24},(_,i)=>i+':00');
+const hourData=[820,640,480,320,210,180,290,480,620,750,810,870,920,880,840,900,980,1120,1380,1640,1820,1940,1760,1240];
+new Chart(document.getElementById('hourChart'),{
+  type:'bar',
+  data:{labels:hours,datasets:[{data:hourData,backgroundColor:hourData.map(v=>v>1500?'#E24B4A':v>1000?'#EF9F27':'#9FE1CB'),borderRadius:3}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{font:{size:9},maxRotation:0,callback:(v,i)=>i%4===0?hours[i]:''},grid:{display:false}},
+    y:{ticks:{font:{size:9}},grid:{color:'rgba(0,0,0,0.04)'}}}}
+});
+</script>
+</body>
+</html>
